@@ -7,8 +7,61 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>表单校验</title>
     <script src="js/form_check.min.js"></script>
-    <style></style>
+    <style>
+        input{ margin-right: 10px;}
+        .error_tips{ color: red;}
+        .warn_tips{ color: green;}
+    </style>
 </head>
 <body>
+    <ul>
+        <li><input value="a" /></li>
+        <li><input /></li>
+        <li><input /></li>
+        <li><input /></li>
+        <li><input /></li>
+        <li><input /></li>
+        <li><input /></li>
+        <li><input /></li>
+        <li><input /></li>
+    </ul>
+    <script>
+        var input = document.querySelectorAll('input');
+        yi_public.form_check.content({
+            //form_name: 'aaaa',      //如果页面有多少表单时可取名字进行实别
+            target: input[0],    //要验证input的dom元素或domID必填
+            //tips: ".input_err",  //报错信息的dom元素或domID
+                                //如果不写，会自动在input后面加一个"span"，
+                                //报错信息会自动加“notice_no”的样式。
+            entry: "请输入时提示",  //在输入时的提示内容在上面“dom_tip”元素里，
+                                   //样式名“notice_tip”。
+            check: "is_empty",      //验证类型，可参考下面的验证类型列表必填
+            required: true,         //是否是强校验
+            result: function(obj){  //回调,在光标移开时执行
+                //rev:      false,验证结果
+                //target:   dom,验证的input元素
+                //tips:     dom,报错与提示信息的元素
+            }
+        });
+        var input = document.querySelectorAll('input');
+
+        yi_public.form_check.content({
+            //form_name: 'aaaa',
+            target: input[1],
+            check: "is_empty",
+        });
+
+        yi_public.form_check.content({
+            //form_name: 'aaaa',
+            target: input[2],
+            check: "is_empty",
+        });
+
+        setTimeout(() => {
+            console.log(yi_public.form_check.must());
+        }, 10);
+
+
+    </script>
 </body>
 </html>
