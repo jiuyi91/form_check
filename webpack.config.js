@@ -5,5 +5,6 @@ module.exports = {
     output: {
         path: __dirname + '/dist/js',
         filename: 'form_check.min.js'
-    }
+    },
+    devtool: 'inline-source-map'
 }

@@ -3,7 +3,7 @@
  *
  */
 ;(function definelayer(global, factory) {
-    var form_check = factory(global);
+    let form_check = factory(global);
     //给类注入到window上，方便业务二次调用
     if (typeof exports === 'object' &&  exports && typeof exports.nodeName !== 'string') {
         // CommonJS
@@ -33,7 +33,7 @@
     }
 
     let insert_after = (new_el, target) => {
-        var parent = target.parentNode;
+        let parent = target.parentNode;
         if (parent.lastChild == target) {
             parent.appendChild(new_el);
         } else {
@@ -43,8 +43,16 @@
 
     let form_list = {};
 
-    let form_check = {
+    let _check_list = {};
+    let _set_check = (name, check_fn) => {
+        if(!_check_list[name]){
+            _check_list[name] = check_fn;
+        }else{
+            console.error(name + '校验的名字已用过，请重新取一个名，已有的可在“yi_public.form_check._check_list”中查到')
+        }
+    }
 
+    let form_check = {
         //在某元素里输入提示内容
         notice: (obj) => {
             obj.tips.classList.remove('error_tips');
@@ -61,7 +69,6 @@
                 obj.tips.innerHTML = '';
             }
         },
-
         //给某元素绑定校验方法
         content: (obj) => {
             obj.target = get_dom(obj.target);
@@ -83,8 +90,9 @@
 
             let blur_fn = () => {
                 let val = obj.target.value || '',
-                    result = form_check._check_name[obj.check]({
-                        val: val
+                    result = _check_list[obj.check]({
+                        val: val,
+                        check: _check_list
                     });//,
                     //ev = ev || _win.event || {};
                 form_check.notice({
@@ -116,10 +124,26 @@
                     type: 'focus'
                 })
             }, false);
-
-            console.log(obj);
         },
+        //只校验具体的值
+        check: (obj) => {
+            obj.tips = obj.tips && get_dom(obj.tips);
 
+            let result = _check_list[obj.check]({
+                val: obj.val,
+                check: _check_list
+            });
+
+            if(obj.tips){
+                form_check.notice({
+                    tips: obj.tips,
+                    msg: result.MSG,
+                    rev: result.REV,
+                    type: 'blur',
+                });
+            }
+            return result.REV;
+        },
         //校验content方法绑定的元素是否通过校验
         must: (str) => {
             let rev = true,
@@ -147,38 +171,163 @@
                 return rev;
             }
         },
-        set_check: (name, check_fn) => {},
-        _check_name: {
-            is_empty: (obj) => {
-                let num = obj.val,
-                    msg = '',
-                    rev = true;
-                if( num == '' || num == null ){
-                    rev =  false;
-                    msg = '不能为空'
-                }
-                return{
-                    REV: rev,
-                    MSG: msg
-                };
-            },
-            is_email: (obj) => {
-                let val = obj.val,
-                    not_empty = form_check._check_name.is_empty(obj),
-                    rev = not_empty.REV,
-                    msg = not_empty.MSG;
-
-                if(rev && !(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(val)) ){
-                    rev = false;
-                    msg = '请输入正确的邮箱';
-                }
-                return{
-                    REV: rev,
-                    MSG: msg
-                };
-            }
-        }
+        set_check: _set_check,
+        _check_list: _check_list
     }
+
+    _set_check('is_empty', (obj) => {
+        let num = obj.val,
+            msg = '',
+            rev = true;
+        if( num == '' || num == null ){
+            rev =  false;
+            msg = '不能为空'
+        }
+        return{
+            REV: rev,
+            MSG: msg
+        };
+    });
+
+    _set_check('is_email', obj => {
+        let val = obj.val,
+            not_empty = obj.check.is_empty(obj),
+            rev = not_empty.REV,
+            msg = not_empty.MSG;
+
+        if(rev && !(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(val)) ){
+            rev = false;
+            msg = '请输入正确的邮箱';
+        }
+        return{
+            REV: rev,
+            MSG: msg
+        };
+    });
+    _set_check('phone', obj => {
+        let num = obj.val.replace(/(^\s*)|(\s*$)/g,''),
+            not_empty = obj.check.is_empty(obj),
+            rev = not_empty.REV,
+            msg = not_empty.MSG;
+        if(rev && !/^(1)[3|4|5|6|7|8|9]\d{9}$/.test(num)){
+            rev = false;
+            msg = '请输入正确的手机号';
+        }
+        return{
+            REV: rev,
+            MSG: msg
+        };
+    });
+
+
+    //验证姓名
+    _set_check('real_name', obj => {
+        let val = obj.val,
+            not_empty = obj.check.is_empty(obj),
+            rev = not_empty.REV,
+            msg = not_empty.MSG;
+        if(rev && !/^\s*[\u4e00-\u9fa5]{1,}[\u4e00-\u9fa5.?]{0,15}[\u4e00-\u9fa5]{1,}\s*$/.test(val) || val.length > 20){
+            rev = false;
+            msg = '请输入正确真实姓名';
+        }else if(val.indexOf(' ') > -1){
+            rev = false;
+            msg = '不能有空格';
+        }
+        return{
+            REV: rev,
+            MSG: msg
+        };
+    });
+
+    //验证地址
+    _set_check('address', obj => {
+        let val = obj.val,
+            not_empty = obj.check.is_empty(obj),
+            rev = not_empty.REV,
+            msg = not_empty.MSG,
+            _msg_arr;
+        if(rev && /[^\a-\z\A-\Z0-9\u4E00-\u9FA5\ ]/g.test(val)){
+            _msg_arr = val.match(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5\ ]/g) || [];
+            rev = false;
+            msg = '不得含有(' + _msg_arr.join(' ') + ')';
+        }
+        return{
+            REV: rev,
+            MSG: msg
+        };
+    });
+
+    //验证地址
+    _set_check('id_card', obj => {
+        let num = obj.val,
+            err_msg = '请输入正确身份证号码',
+            len = num.length,
+            wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ],
+            valide_code = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ],
+            val_code = 0,
+            not_empty = obj.check.is_empty(obj),
+            rev = not_empty.REV,
+            msg = not_empty.MSG,
+            //15位时的生日校对
+            len_15_birthday = function(){
+                var year =  num.substring(6,8),
+                    month = num.substring(8,10),
+                    day = num.substring(10,12),
+                    temp_date = new Date( year, parseFloat(month) - 1, parseFloat(day) );
+                if(temp_date.getYear() != parseFloat(year) || temp_date.getMonth() != parseFloat(month)-1 || temp_date.getDate() != parseFloat(day)){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
+            len_18 = function (){
+                var sum = 0,
+                    num = obj.val.split("");
+                if (num[17].toLowerCase() == 'x'){
+                    num[17] = 10;
+                }
+                for( var i = 0; i < 17; i++){
+                    sum += wi[i] * num[i];
+                }
+                val_code = sum % 11;
+                if (num[17] != valide_code[val_code]){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
+            len_18_birthday = function (){//isValidityBrithBy18IdCard
+                var year =  num.substring(6,10),
+                    month = num.substring(10,12),
+                    day = num.substring(12,14),
+                    temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+                if(temp_date.getFullYear() != parseFloat(year) || temp_date.getMonth() != parseFloat(month) - 1 || temp_date.getDate() != parseFloat(day)){
+                    return false;
+                }else{
+                    return true;
+                }
+            };
+        if(!rev){
+            //msg = "请输入身份证号";
+        }else if(rev && len == 15){
+            if(!len_15_birthday()){
+                rev = false;
+                msg = err_msg;
+            }
+        }else if(rev && len == 18){
+            if(!(len_18() && len_18_birthday())){
+                rev =  false;
+                msg = err_msg;
+            }
+        }else{
+            rev =  false;
+            msg = err_msg;
+        }
+        return{
+            REV: rev,
+            MSG: msg
+        }
+    });
 
     _win.yi_public = _win.yi_public || {};
     _win.yi_public.form_check = form_check;

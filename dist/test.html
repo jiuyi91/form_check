@@ -24,6 +24,7 @@
         <li><input /></li>
         <li><input /></li>
         <li><input /></li>
+        <li class="input_err"></li>
     </ul>
     <script>
         var input = document.querySelectorAll('input');
@@ -48,7 +49,7 @@
         yi_public.form_check.content({
             //form_name: 'aaaa',
             target: input[1],
-            check: "is_empty",
+            check: "is_email",
         });
 
         yi_public.form_check.content({
@@ -57,11 +58,36 @@
             check: "is_empty",
         });
 
-        setTimeout(() => {
-            console.log(yi_public.form_check.must());
-        }, 10);
 
+        yi_public.form_check.set_check('real_name', obj => {
+            let val = obj.val,
+                not_empty = obj.check.is_empty(obj),
+                rev = not_empty.REV,
+                msg = not_empty.MSG;
+            if(rev && !/^\s*[\u4e00-\u9fa5]{1,}[\u4e00-\u9fa5.?]{0,15}[\u4e00-\u9fa5]{1,}\s*$/.test(val) || val.length > 20){
+                rev = false;
+                msg = '请输入正确真实姓名';
+            }else if(val.indexOf(' ') > -1){
+                rev = false;
+                msg = '不能有空格';
+            }
+            return{
+                REV: rev,
+                MSG: msg
+            };
+        });
 
+        var aa = yi_public.form_check.check({
+            val: '41152219 8508', //要校验的文本值
+            tips: ".input_err",
+            check: "real_name",
+        });
+
+        console.log(aa);
+
+        // setTimeout(() => {
+        //     console.log(yi_public.form_check.must());
+        // }, 3000);
     </script>
 </body>
 </html>
