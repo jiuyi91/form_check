@@ -36,9 +36,23 @@ var return_content = yi_public.form_check.content({
     required: true,         //是否是强校验
     result: function(obj){  //回调,在光标移开时执行
         console.log(obj);
+        obj的值如下
+        // {
+        //     REV: rev,
+        //     MSG: msg
+        //     result.target = obj.target;
+        //     result.tips = obj.tips;
+        //     AAA: '我是校对方法里自定义的值（可以写安全等组）'
+        // }
     }
 });
 console.log(return_content);
+//return_content的值
+// {
+//     target: obj.target,
+//     tips: obj.tips
+// }
+
 //能输入的文本进行校验
 var return_check = yi_public.form_check.check({
     val: '41152219 8508', //要校验的文本值
