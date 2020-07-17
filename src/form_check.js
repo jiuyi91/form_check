@@ -88,13 +88,16 @@
             }
             obj.target.__form_check__content = true;
 
+            let blur_timer = null;
             let blur_fn = () => {
+                if(obj.result){
+                    clearInterval(blur_timer);
+                }
                 let val = obj.target.value || '',
                     result = _check_list[obj.check]({
                         val: val,
                         check: _check_list
-                    });//,
-                    //ev = ev || _win.event || {};
+                    });
                 form_check.notice({
                     target: obj.target,
                     tips: obj.tips,
@@ -116,6 +119,19 @@
             obj.target.addEventListener('blur', blur_fn, false);
 
             obj.target.addEventListener('focus', () => {
+                if(obj.result){
+                    clearInterval(blur_timer);
+                    blur_timer = setInterval(() => {
+                        let val = obj.target.value || '',
+                            result = _check_list[obj.check]({
+                                val: val,
+                                check: _check_list
+                            });
+                        result.target = obj.target;
+                        result.tips = obj.tips;
+                        obj.result(result);
+                    },600);
+                }
                 form_check.notice({
                     target: obj.target,
                     tips: obj.tips,
@@ -124,6 +140,10 @@
                     type: 'focus'
                 })
             }, false);
+            return {
+                target: obj.target,
+                tips: obj.tips
+            }
         },
         //只校验具体的值
         check: (obj) => {
