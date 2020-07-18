@@ -36,12 +36,13 @@ var return_content = yi_public.form_check.content({
     required: true,         //是否是强校验
     result: function(obj){  //回调,在光标移开时执行
         console.log(obj);
-        obj的值如下
+        //当光标进行时每0.6秒校对一次并返回obj
+        //obj的值如下
         // {
         //     REV: rev,
         //     MSG: msg
-        //     result.target = obj.target;
-        //     result.tips = obj.tips;
+        //     target: target;
+        //     tips: tips;
         //     AAA: '我是校对方法里自定义的值（可以写安全等组）'
         // }
     }
@@ -49,8 +50,8 @@ var return_content = yi_public.form_check.content({
 console.log(return_content);
 //return_content的值
 // {
-//     target: obj.target,
-//     tips: obj.tips
+//     target: target,
+//     tips: tips
 // }
 
 //能输入的文本进行校验
@@ -59,7 +60,16 @@ var return_check = yi_public.form_check.check({
     tips: ".input_err",
     check: "real_namea",
 });
-//return_check 值为 'false' or 'true'
-console.log('return_check', return_check);
+//return_check 值为 'false' or 'true';
+
+yi_public.form_check.must(src) //如果页面有多少表单时可取名字进行校对
+
+yi_public.form_check.notice({
+    tips: '.className', //#ID || div
+    rev: false, //true 时会让提示文字消失
+    msg: '报错内容'
+});
+
+
 ```
 
