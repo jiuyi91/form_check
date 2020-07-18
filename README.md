@@ -1,4 +1,4 @@
-# 表单验证（form_check）
+# 表单验证（form_check）此文件自己设计用的的作用域链编写
 ## 使用样例可参考dist/test.html
 ## 使用样例
 ```javascript
