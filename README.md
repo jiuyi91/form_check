@@ -75,6 +75,6 @@ yi_public.form_check.notice({
     rev: false, //true 时会让提示文字消失
     msg: '报错内容'
 });
-
+1111
 ```
 
