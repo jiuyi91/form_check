@@ -55,15 +55,23 @@
     let form_check = {
         //在某元素里输入提示内容
         notice: (obj) => {
+            obj.tips = obj.tips && get_dom(obj.tips);
+
+            if(!obj.tips){
+                console.error('yi_public.form_check.notice里参数tips请传入dom对像 || #ID || div || .className');
+            }
+
             obj.tips.classList.remove('error_tips');
             obj.tips.classList.remove('warn_tips');
             if(!obj.rev){
                 obj.tips.innerHTML = obj.msg || '';
-                if(obj.type === 'blur'){
-                    obj.tips.classList.add('error_tips');
-                }
+                // if(obj.type === 'blur'){
+                //     obj.tips.classList.add('error_tips');
+                // }
                 if(obj.type === 'focus'){
                     obj.tips.classList.add('warn_tips');
+                }else{
+                    obj.tips.classList.add('error_tips');
                 }
             }else{
                 obj.tips.innerHTML = '';
@@ -103,7 +111,7 @@
                     tips: obj.tips,
                     msg: result.MSG,
                     rev: result.REV,
-                    type: 'blur',
+                    //type: 'blur',
                 });
                 return result.REV;
             }
@@ -159,7 +167,7 @@
                     tips: obj.tips,
                     msg: result.MSG,
                     rev: result.REV,
-                    type: 'blur',
+                    //type: 'blur',
                 });
             }
             return result.REV;

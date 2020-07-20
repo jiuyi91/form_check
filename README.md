@@ -27,8 +27,8 @@ yi_public.form_check.set_check('real_namea', obj => {
 var input = document.querySelectorAll('input');
 var return_content = yi_public.form_check.content({
     form_name: 'aaaa',      //如果页面有多少表单时可取名字进行实别
-    target: input[0],       //要验证input的dom元素（//dome对像 || #ID || div）
-    tips: ".input_err",     //*报错信息的dom元素（//dome对像 || #ID || div）
+    target: input[0],       //要验证input的dom元素（//dom对像 || #ID || div || .className）
+    tips: ".className",     //*报错信息的dom元素（//dom对像 || #ID || div || .className）
                             //*如果不写，会自动在input后面加一个"span"，
                             //*报错信息会自动加“error_tips”的样式。
 
@@ -61,7 +61,7 @@ console.log(return_content);
 //能输入的文本进行校验
 var return_check = yi_public.form_check.check({
     val: '41152219 8508', //要校验的文本值
-    tips: ".input_err", //dome对像 || #ID || div
+    tips: ".className", //dom对像 || #ID || div || .className
     check: "real_namea",
 });
 //return_check 值为 'false' or 'true';
@@ -71,7 +71,7 @@ yi_public.form_check.must(src) //如果页面有多少表单时可取名字进�
 
 
 yi_public.form_check.notice({
-    tips: '.className', //dome对像 || #ID || div
+    tips: '.className', //dom对像 || #ID || div || .className
     rev: false, //true 时会让提示文字消失
     msg: '报错内容'
 });

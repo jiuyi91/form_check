@@ -25,6 +25,7 @@
         <li><input /></li>
         <li><input /></li>
         <li class="input_err"></li>
+        <li class="input_err2"></li>
     </ul>
     <script>
         yi_public.form_check.set_check('real_namea', obj => {
@@ -73,7 +74,14 @@
             tips: ".input_err",
             check: "real_namea",
         });
+
         console.log('return_check', return_check);
+
+        yi_public.form_check.notice({
+            tips: '.input_err2', //dome对像 || #ID || div
+            rev: false, //true 时会让提示文字消失
+            msg: '报错内容'
+        });
 
         // setTimeout(() => {
         //     console.log(yi_public.form_check.must());
