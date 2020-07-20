@@ -15,18 +15,12 @@
 </head>
 <body>
     <ul>
-        <li><input value="a" /></li>
         <li><input /></li>
         <li><input /></li>
-        <li><input /></li>
-        <li><input /></li>
-        <li><input /></li>
-        <li><input /></li>
-        <li><input /></li>
-        <li><input /></li>
-        <li class="input_err"></li>
-        <li class="input_err2"></li>
     </ul>
+    ##以下的报错提示信息
+    <div class="input_err"></div>
+    <div class="input_err2"></div>
     <script>
         yi_public.form_check.set_check('real_namea', obj => {
             let val = obj.val,
@@ -67,6 +61,11 @@
             }
         });
         console.log(return_content);
+
+        var return_content = yi_public.form_check.content({
+            target: input[1],
+            check: "is_empty",
+        });
 
 
         var return_check = yi_public.form_check.check({
